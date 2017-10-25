@@ -122,8 +122,8 @@ def imageCompare(P1,name):
     img = cv2.imread('/Users/zhangdi/Documents/course computer vision/project2/frame1.bmp')
     #print(img.size)
     for i in range(72):
-        pt1 = (int(points_2d[1,i]), int(points_2d[0,i]))
-        pt2 = (int(data_2d[1,i]), int(data_2d[0,i]))
+        pt1 = (int(points_2d[0,i]), int(points_2d[1,i]))
+        pt2 = (int(data_2d[0,i]), int(data_2d[1,i]))
         cv2.arrowedLine(img, pt1, pt2, 255, 2)
 #    cv2.imshow('Image with arrow', img)
 #    cv2.waitKey(0)
