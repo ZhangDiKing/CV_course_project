@@ -1,4 +1,3 @@
-#%%
 import scipy.io as sio
 import numpy as np
 import math
@@ -22,7 +21,8 @@ L1   =np.array([0, 0, -1])
 L2   =np.array([0.5774, - 0.5774, -0.5774])
 f1   =40
 f2   =30
-#%%
+
+#3d to 2d Full Prospective Projection
 def threeD_to_twoD_porjection(R,L,f,outputname):    
     #input parameters other than R and T and f
     (N,c)=X.shape
@@ -41,6 +41,7 @@ def threeD_to_twoD_porjection(R,L,f,outputname):
     real_pos =np.hstack((X,np.hstack((Y,np.hstack((Z, np.ones((N,1))))))))   
     pos_array=np.dot(P,real_pos.T)
     
+    #erase the scaling factor lamda
     pos_array[0,:]=pos_array[0,:]/pos_array[2,:]
     pos_array[1,:]=pos_array[1,:]/pos_array[2,:]
     const_para    =Beta*Rho*math.pi/4.0*((d/f)**2)*(math.cos(Alpha)**4)
@@ -58,17 +59,18 @@ def threeD_to_twoD_porjection(R,L,f,outputname):
         if int(I[i])>=0 :
             projection_2d[int(round(pos_array[1,i])),int(round(pos_array[0,i]))]=int(I[i])
     
-    #write image
+    #write image to certain path
     path='/Users/zhangdi/Documents/course computer vision/project1/'
     cv2.imwrite(path+outputname+'.jpg',projection_2d)
     return projection_2d
-# %%
+
+#3d to 2d Weak Prospective Projection 
 def threeD_to_twoD_porjection_weak(R,L,f,outputname):    
     #input parameters other than R and T and f
     (N,c)   =X.shape
     T       =np.array([[-14],[-71],[1000]])
     xyz     =np.hstack((X,np.hstack((Y,Z))))  
-    R_w     =R.copy()
+    R_w     =R.copy()     #deep copy to make sure R will not change
     zc_avg  =np.mean(np.dot(R_w[2,:],xyz.T)+T[2])
     Sx      =8
     Sy      =8
@@ -87,12 +89,9 @@ def threeD_to_twoD_porjection_weak(R,L,f,outputname):
     P        =f/zc_avg*np.dot(w1,np.hstack((R_w,T))) 
     real_pos =np.hstack((X,np.hstack((Y,np.hstack((Z, np.ones((N,1))))))))   
     pos_array=np.dot(P,real_pos.T)
-
-
     const_para=Beta*Rho*math.pi/4.0*((d/f)**2)*(math.cos(Alpha)**4)
     Norm=np.hstack((Nx,np.hstack((Ny,Nz))))
     I=const_para*np.dot(L.T,Norm.T)*255
-
 
     #generate the 2d_projection array
     I.astype(np.uint8)
@@ -108,7 +107,8 @@ def threeD_to_twoD_porjection_weak(R,L,f,outputname):
     path='/Users/zhangdi/Documents/course computer vision/project1/'
     cv2.imwrite(path+outputname+'.jpg',projection_2d)
     return pos_array
-# %%   
+
+#2d to 3d Orthographic Perspective Projection
 def threeD_to_twoD_porjection_orth(R,L,f,outputname):    
     #input parameters other than R and T and f
     (N,c)   =X.shape
@@ -133,17 +133,13 @@ def threeD_to_twoD_porjection_orth(R,L,f,outputname):
     P        =f/zc_avg*np.dot(w1,np.hstack((R_w,T)))
     real_pos =np.hstack((X,np.hstack((Y,np.hstack((Z, np.ones((N,1))))))))   
     pos_array=np.dot(P,real_pos.T)
-
-
     const_para=Beta*Rho*math.pi/4.0*((d/f)**2)*(math.cos(Alpha)**4)
     Norm=np.hstack((Nx,np.hstack((Ny,Nz))))
     I=const_para*np.dot(L.T,Norm.T)*255
 
-
     #generate the 2d_projection array
     I.astype(np.uint8)
     (_,N)=pos_array.shape
-    #k=11
     k    =11
     r    =int(round(max(pos_array[1,:])))+k
     c    =int(round(max(pos_array[0,:])))+k
@@ -161,30 +157,35 @@ def threeD_to_twoD_porjection_orth(R,L,f,outputname):
     path='/Users/zhangdi/Documents/course computer vision/project1/'
     cv2.imwrite(path+outputname+'.jpg',projection_2d)
     return pos_array
-#%%
-a=threeD_to_twoD_porjection(R1,L1,f1,'1')
-b=threeD_to_twoD_porjection(R2,L1,f1,'2')
-c=threeD_to_twoD_porjection(R1,L2,f1,'3')
-d=threeD_to_twoD_porjection(R2,L2,f1,'4')
-e=threeD_to_twoD_porjection(R1,L1,f2,'5')
-f=threeD_to_twoD_porjection(R2,L1,f2,'6')
-g=threeD_to_twoD_porjection(R1,L2,f2,'7')
-h=threeD_to_twoD_porjection(R2,L2,f2,'8')
-#%%
-a=threeD_to_twoD_porjection_weak(R1,L1,f1,'w1')
-b=threeD_to_twoD_porjection_weak(R2,L1,f1,'w2')
-c=threeD_to_twoD_porjection_weak(R1,L2,f1,'w3')
-d=threeD_to_twoD_porjection_weak(R2,L2,f1,'w4')
-e=threeD_to_twoD_porjection_weak(R1,L1,f2,'w5')
-f=threeD_to_twoD_porjection_weak(R2,L1,f2,'w6')
-g=threeD_to_twoD_porjection_weak(R1,L2,f2,'w7')
-h=threeD_to_twoD_porjection_weak(R2,L2,f2,'w8')
-#%%
-a=threeD_to_twoD_porjection_orth(R1,L1,f1,'o1')
-b=threeD_to_twoD_porjection_orth(R2,L1,f1,'o2')
-c=threeD_to_twoD_porjection_orth(R1,L2,f1,'o3')
-d=threeD_to_twoD_porjection_orth(R2,L2,f1,'o4')
-e=threeD_to_twoD_porjection_orth(R1,L1,f2,'o5')
-f=threeD_to_twoD_porjection_orth(R2,L1,f2,'o6')
-g=threeD_to_twoD_porjection_orth(R1,L2,f2,'o7')
-h=threeD_to_twoD_porjection_orth(R2,L2,f2,'o8') 
+
+def main():
+    #test full perspectiveprojection under different parameters
+    a=threeD_to_twoD_porjection(R1,L1,f1,'1')
+    b=threeD_to_twoD_porjection(R2,L1,f1,'2')
+    c=threeD_to_twoD_porjection(R1,L2,f1,'3')
+    d=threeD_to_twoD_porjection(R2,L2,f1,'4')
+    e=threeD_to_twoD_porjection(R1,L1,f2,'5')
+    f=threeD_to_twoD_porjection(R2,L1,f2,'6')
+    g=threeD_to_twoD_porjection(R1,L2,f2,'7')
+    h=threeD_to_twoD_porjection(R2,L2,f2,'8')
+    
+    #test weak perspectiveprojection under different parameters
+    a=threeD_to_twoD_porjection_weak(R1,L1,f1,'w1')
+    b=threeD_to_twoD_porjection_weak(R2,L1,f1,'w2')
+    c=threeD_to_twoD_porjection_weak(R1,L2,f1,'w3')
+    d=threeD_to_twoD_porjection_weak(R2,L2,f1,'w4')
+    e=threeD_to_twoD_porjection_weak(R1,L1,f2,'w5')
+    f=threeD_to_twoD_porjection_weak(R2,L1,f2,'w6')
+    g=threeD_to_twoD_porjection_weak(R1,L2,f2,'w7')
+    h=threeD_to_twoD_porjection_weak(R2,L2,f2,'w8')
+    
+    #test Orthographic perspectiveprojection under different parameters
+    a=threeD_to_twoD_porjection_orth(R1,L1,f1,'o1')
+    b=threeD_to_twoD_porjection_orth(R2,L1,f1,'o2')
+    c=threeD_to_twoD_porjection_orth(R1,L2,f1,'o3')
+    d=threeD_to_twoD_porjection_orth(R2,L2,f1,'o4')
+    e=threeD_to_twoD_porjection_orth(R1,L1,f2,'o5')
+    f=threeD_to_twoD_porjection_orth(R2,L1,f2,'o6')
+    g=threeD_to_twoD_porjection_orth(R1,L2,f2,'o7')
+    h=threeD_to_twoD_porjection_orth(R2,L2,f2,'o8') 
+main()
