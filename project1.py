@@ -4,7 +4,7 @@ import math
 import cv2
 
 #read data from file
-matfile ='/Users/zhangdi/Documents/course computer vision/project1/CV1_data.mat'
+matfile ='path/CV1_data.mat'
 data    = sio.loadmat(matfile)
 
 Nx = data['Nx']
@@ -60,7 +60,7 @@ def threeD_to_twoD_porjection(R,L,f,outputname):
             projection_2d[int(round(pos_array[1,i])),int(round(pos_array[0,i]))]=int(I[i])
     
     #write image to certain path
-    path='/Users/zhangdi/Documents/course computer vision/project1/'
+    path='path/'
     cv2.imwrite(path+outputname+'.jpg',projection_2d)
     return projection_2d
 
@@ -104,7 +104,7 @@ def threeD_to_twoD_porjection_weak(R,L,f,outputname):
             projection_2d[int(round(pos_array[1,i])),int(round(pos_array[0,i]))]=int(I[i])
     
     #write image
-    path='/Users/zhangdi/Documents/course computer vision/project1/'
+    path='path/'
     cv2.imwrite(path+outputname+'.jpg',projection_2d)
     return pos_array
 
@@ -154,7 +154,7 @@ def threeD_to_twoD_porjection_orth(R,L,f,outputname):
             projection_2d[pos_x-k:pos_x+k,pos_y-k:pos_y+k]=int(I[i])
     
     #write image
-    path='/Users/zhangdi/Documents/course computer vision/project1/'
+    path='path/'
     cv2.imwrite(path+outputname+'.jpg',projection_2d)
     return pos_array
 
